@@ -331,6 +331,10 @@ function crawlForAnyPendingDistribution() {
 						async.series(arrQueries, function() {
 							conn.release();
 							sendReportToAdmin();
+							// auto authorize
+							db.query("UPDATE distributions SET is_authorized=1 WHERE id = ?", [distributions[0].id], () => {
+								processAnyAuthorizedDistribution();
+							});
 						});
 					});
 
