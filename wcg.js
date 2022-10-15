@@ -602,18 +602,18 @@ function createDistributionOutputs(distributionID, distributionDate, handleOutpu
 		FROM wcg_scores \n\
 		LEFT JOIN outputs \n\
 			ON wcg_scores.payout_address=outputs.address \n\
-			AND asset IS NULL \n\
+			AND asset=? \n\
 			AND (SELECT address FROM unit_authors WHERE unit_authors.unit=outputs.unit)=? \n\
 			AND (SELECT creation_date FROM units WHERE units.unit=outputs.unit)>? \n\
-			AND CAST(bytes_reward as INT)=outputs.amount\n\
+			AND CAST(diff_from_previous as INT)=outputs.amount\n\
 		WHERE outputs.address IS NULL \n\
 			AND distribution_id=?  \n\
-			AND bytes_reward>0 \n\
+		--	AND bytes_reward>0 \n\
 			AND diff_from_previous>0  \n\
 			AND payout_address IS NOT NULL  \n\
 			AND payment_unit IS NULL \n\
-		ORDER BY bytes_reward \n\
-		LIMIT ?", [my_address, distributionDate, distributionID, constants.MAX_OUTPUTS_PER_PAYMENT_MESSAGE-1],
+		ORDER BY diff_from_previous \n\
+		LIMIT ?", [honorificAsset, my_address, distributionDate, distributionID, constants.MAX_OUTPUTS_PER_PAYMENT_MESSAGE-1],
 		function(rows) {
 			if (rows.length === 0)
 				return handleOutputs();
