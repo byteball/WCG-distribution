@@ -621,10 +621,12 @@ function createDistributionOutputs(distributionID, distributionDate, handleOutpu
 			var arrOutputsAssets = [];
 			var arrMemberIDs = [];
 			rows.forEach(function(row) {
-				arrOutputsBytes.push({
-					amount: row.bytes_reward,
-					address: row.payout_address
-				});
+				if (row.bytes_reward) {
+					arrOutputsBytes.push({
+						amount: row.bytes_reward,
+						address: row.payout_address
+					});
+				}
 				arrOutputsAssets.push({
 					amount: row.diff_from_previous,
 					address: row.payout_address
