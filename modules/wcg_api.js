@@ -6,6 +6,8 @@ const notifications = require('./notifications.js');
 const conf = require('ocore/conf.js');
 const moment = require ('moment');
 
+let last_notification_ts = 0;
+
 function query(accountName, callbacks) {
 
 	request({
@@ -22,7 +24,10 @@ function query(accountName, callbacks) {
 					checkAndReformatRawObject(rawObject, function(errReformating, statsObject) {
 						if (errReformating) {
 							console.log("WCG returned a badly formatted XML " + body);
-							notifications.notifyAdmin(errReformating, body);
+							if (Date.now() - last_notification_ts > 3_600_000) {
+								notifications.notifyAdmin(errReformating, body);
+								last_notification_ts = Date.now();
+							}
 							return callbacks.ifError();
 						} else {
 							return callbacks.ifSuccess(statsObject);
